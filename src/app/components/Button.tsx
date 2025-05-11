@@ -1,4 +1,7 @@
 "use client";
+import { Button } from "@mui/material";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import { redirect, usePathname, useRouter } from "next/navigation";
 
 export function MainButton({ text = "Get Started" }: { text?: string }) {
@@ -16,12 +19,13 @@ export function MainButton({ text = "Get Started" }: { text?: string }) {
     }
   };
   return (
-    <button
+    <Button
       onClick={handleClick}
-      className="bg-sky-500 hover:bg-sky-700"
+      variant="contained"
     >
       {text}
-    </button>
+      <ArrowForwardRoundedIcon />
+    </Button>
   );
 }
 
@@ -36,6 +40,7 @@ export function BackButton({ text = "Back" }: { text?: string }) {
       onClick={handleClick}
       className="bg-sky-500 hover:bg-sky-700"
     >
+      <ArrowBackRoundedIcon />
       {text}
     </button>
   );
