@@ -8,26 +8,22 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useState } from "react";
+import { useContext } from "react";
+import { AppContext } from "../tasks/page";
 
 export const DialogComponent = () => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-
-  const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const { isModalOpen, setIsModalOpen } = useContext(AppContext);
 
   const handleClose = () => {
-    setOpen(false);
+    setIsModalOpen(false);
   };
 
   return (
     <Dialog
       fullScreen={fullScreen}
-      open={open}
+      open={isModalOpen}
       onClose={handleClose}
       aria-labelledby="responsive-dialog-title"
     >

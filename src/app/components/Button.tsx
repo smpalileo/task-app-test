@@ -1,47 +1,55 @@
 "use client";
 import { Button } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import { useContext } from "react";
+import { AppContext } from "../tasks/page";
 
 export function MainButton({ text = "Get Started" }: { text?: string }) {
-  const pathname = usePathname();
-
   const handleClick = () => {
-    console.log("Main button clicked", pathname);
-    switch (pathname) {
-      case "/":
-        return redirect("/tasks");
-      case "/tasks":
-        return;
-      default:
-        break;
-    }
+    return redirect("/tasks");
   };
   return (
     <Button
       onClick={handleClick}
       variant="contained"
+      endIcon={<ArrowForwardRoundedIcon />}
     >
       {text}
-      <ArrowForwardRoundedIcon />
     </Button>
   );
 }
 
 export function BackButton({ text = "Back" }: { text?: string }) {
-  const router = useRouter();
   const handleClick = () => {
-    console.log("Back button clicked");
-    return router.back();
+    return redirect("/");
   };
   return (
-    <button
+    <Button
       onClick={handleClick}
-      className="bg-sky-500 hover:bg-sky-700"
+      variant="contained"
+      startIcon={<ArrowBackRoundedIcon />}
     >
-      <ArrowBackRoundedIcon />
       {text}
-    </button>
+    </Button>
+  );
+}
+
+export function AddButton({ text = "Create" }: { text?: string }) {
+  const { setIsModalOpen } = useContext(AppContext);
+  const handleClick = () => {
+    setIsModalOpen(true);
+  };
+  return (
+    <Button
+      color="success"
+      onClick={handleClick}
+      variant="contained"
+      endIcon={<AddCircleRoundedIcon />}
+    >
+      {text}
+    </Button>
   );
 }
