@@ -1,5 +1,5 @@
 import dbConnect from "@/app/lib/dbConnect";
-import Task from "@/app/models/Task";
+import Task, { taskEntitySchema, TaskUpdateDTO } from "@/app/models/Task";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
@@ -11,8 +11,9 @@ export async function PATCH(
   try {
     const { userId } = await auth();
     const _id = (await params).id;
-    const body = await request.json();
-    const task = await Task.findOneAndUpdate({ _id, userId }, body, {
+    const body: TaskUpdateDTO = await request.json();
+    const input = taskEntitySchema.partial().parse(body);
+    const task = await Task.findOneAndUpdate({ _id, userId }, input, {
       new: true,
     });
     if (!task)

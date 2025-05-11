@@ -1,5 +1,5 @@
 import dbConnect from "@/app/lib/dbConnect";
-import Task from "@/app/models/Task";
+import Task, { TaskCreateDTO, taskEntitySchema } from "@/app/models/Task";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
@@ -21,9 +21,10 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   await dbConnect();
   try {
-    const body = await request.json();
+    const body: TaskCreateDTO = await request.json();
     const { userId } = await auth();
-    const newTask = new Task({ ...body, userId });
+    const input = taskEntitySchema.parse(body);
+    const newTask = new Task({ ...input, userId });
     await newTask.save();
     return NextResponse.json(newTask, { status: 201 });
   } catch (error) {

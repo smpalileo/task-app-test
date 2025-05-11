@@ -1,12 +1,27 @@
 import mongoose from "mongoose";
 import Document, { Schema } from "mongoose";
 
+import { z } from "zod";
+
 export interface ITask extends Document {
   name: string;
   description: string;
   completed: boolean;
   userId: string;
+  deadline?: Date;
+  tags?: string[];
 }
+
+export const taskEntitySchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+  description: z.string(),
+  completed: z.boolean().optional(),
+  deadline: z.string().date().optional(),
+  tags: z.string().array().optional(),
+});
+
+export type TaskCreateDTO = z.infer<typeof taskEntitySchema>;
+export type TaskUpdateDTO = Partial<TaskCreateDTO>;
 
 const TaskSchema: Schema = new mongoose.Schema(
   {
@@ -25,6 +40,14 @@ const TaskSchema: Schema = new mongoose.Schema(
     completed: {
       type: Boolean,
       default: false,
+    },
+    deadline: {
+      type: Date,
+      required: false,
+    },
+    tags: {
+      type: [String],
+      required: false,
     },
   },
   { timestamps: true },
