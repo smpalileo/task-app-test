@@ -1,3 +1,4 @@
+"use client";
 import {
   Alert,
   Box,
@@ -21,7 +22,8 @@ import { MuiChipsInput } from "mui-chips-input";
 export const DialogComponent = ({ title }: { title: string }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const { isModalOpen, setIsModalOpen } = useContext(AppContext);
+  const { isModalOpen, setIsModalOpen, tasks, setTasks } =
+    useContext(AppContext);
 
   const initialState = {
     name: "",
@@ -79,6 +81,8 @@ export const DialogComponent = ({ title }: { title: string }) => {
           success: true,
         });
         setTimeout(() => {
+          setTasks([res as never, ...tasks]);
+          console.log("SHOULD UPDATE", tasks);
           setAlertText(alertState);
           setSubmitState(false);
           handleClose();

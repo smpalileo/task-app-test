@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { DataTableComponent } from "../components/DataTable";
 import { AddButton, BackButton } from "../components/Button";
@@ -9,9 +9,10 @@ import { Box } from "@mui/material";
 
 export const AppContext = createContext({
   userName: "",
-  loading: true,
   isModalOpen: false,
   setIsModalOpen: (isModalOpen: boolean) => {},
+  tasks: [],
+  setTasks: (tasks: never[]) => {},
 });
 
 export default function Page() {
@@ -19,39 +20,30 @@ export default function Page() {
   const userName =
     user?.firstName || user?.emailAddresses[0].emailAddress.split("@")[0] || "";
 
-  const fetchTasks = async () => {
-    const response = await fetch("/api/tasks");
-    const tasks = await response.json();
-    return tasks;
-  };
-
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    fetchTasks().then((tasks) => {
-      setTimeout(() => {
-        setTasks(tasks);
-        setLoading(false);
-      }, 3000);
-    });
-  }, []);
+  const [tasks, setTasks] = useState([]);
 
   return (
     <AppContext.Provider
-      value={{ userName, loading, isModalOpen, setIsModalOpen }}
+      value={{
+        userName,
+        isModalOpen,
+        setIsModalOpen,
+        tasks,
+        setTasks,
+      }}
     >
       <Box
         sx={{
+          m: "4",
           width: "auto",
         }}
       >
-        <div className="flex-col">
+        <div>
           <BackButton />
           <AddButton />
         </div>
-        <DataTableComponent data={tasks} />
+        <DataTableComponent />
       </Box>
       {isModalOpen && <DialogComponent title={"Create New Task"} />}
     </AppContext.Provider>

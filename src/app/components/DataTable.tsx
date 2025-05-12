@@ -1,17 +1,31 @@
-import { HydratedDocument } from "mongoose";
-import { ITask } from "../models/Task";
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client";
 import { AppContext } from "../tasks/page";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import { ChipComponent } from "./Chip";
+import { HydratedDocument } from "mongoose";
+import { ITask } from "../models/Task";
 
-export const DataTableComponent = ({
-  data,
-}: {
-  data: Array<HydratedDocument<ITask>>;
-}) => {
-  const { userName, loading } = useContext(AppContext);
+export const DataTableComponent = () => {
+  const { userName, tasks, setTasks } = useContext(AppContext);
+  const [loading, setLoading] = useState(true);
+
+  const fetchTasks = async () => {
+    const response = await fetch("/api/tasks");
+    const tasks = await response.json();
+    return tasks;
+  };
+
+  useEffect(() => {
+    fetchTasks().then((tasks) => {
+      setTimeout(() => {
+        setTasks(tasks);
+        setLoading(false);
+      }, 2000);
+    });
+  }, []);
 
   const columns: GridColDef[] = [
     { field: "name", headerName: "Name", width: 300 },
@@ -54,12 +68,14 @@ export const DataTableComponent = ({
   return (
     <Paper sx={{ height: 800, width: "100%" }}>
       <DataGrid
-        rows={data.map((task) => {
-          return {
-            ...task,
-            id: task._id,
-          };
-        })}
+        rows={(tasks as unknown as Array<HydratedDocument<ITask>>).map(
+          (task) => {
+            return {
+              ...task,
+              id: task._id,
+            };
+          },
+        )}
         columns={columns}
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10, 20]}
