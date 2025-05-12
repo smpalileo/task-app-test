@@ -5,6 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { DataTableComponent } from "../components/DataTable";
 import { AddButton, BackButton } from "../components/Button";
 import { DialogComponent } from "../components/Modal";
+import { Box } from "@mui/material";
 
 export const AppContext = createContext({
   userName: "",
@@ -41,14 +42,18 @@ export default function Page() {
     <AppContext.Provider
       value={{ userName, loading, isModalOpen, setIsModalOpen }}
     >
-      <div>
-        <div>
+      <Box
+        sx={{
+          width: "auto",
+        }}
+      >
+        <div className="flex-col">
           <BackButton />
           <AddButton />
         </div>
         <DataTableComponent data={tasks} />
-      </div>
-      {isModalOpen && <DialogComponent />}
+      </Box>
+      {isModalOpen && <DialogComponent title={"Create New Task"} />}
     </AppContext.Provider>
   );
 }

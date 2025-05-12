@@ -18,13 +18,13 @@ export const DataTableComponent = ({
   console.log("loading: ", loading);
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Name", width: 400 },
-    { field: "description", headerName: "Description", width: 850 },
+    { field: "name", headerName: "Name", width: 300 },
+    { field: "description", headerName: "Description", flex: 1, minWidth: 800 },
     {
       field: "deadline",
       headerName: "Deadline",
       type: "date",
-      width: 300,
+      flex: 0.3,
       valueGetter: (value, row) =>
         row.deadline ? new Date(row.deadline) : null,
     },
@@ -32,7 +32,7 @@ export const DataTableComponent = ({
       field: "tags",
       headerName: "Tags",
       sortable: false,
-      width: 450,
+      flex: 0.5,
       renderCell: (params: GridRenderCellParams<string[], string[]>) =>
         params.value && params.value.length > 0
           ? params.value.map((tag) => (
@@ -48,7 +48,8 @@ export const DataTableComponent = ({
       headerName: "Status",
       type: "boolean",
       sortable: false,
-      width: 50,
+      align: "right",
+      flex: 0.1,
     },
   ];
 
@@ -68,9 +69,10 @@ export const DataTableComponent = ({
           })}
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[5, 10]}
-          checkboxSelection
-          sx={{ border: 0 }}
+          pageSizeOptions={[5, 10, 20]}
+          sx={{ border: 15, padding: 4 }}
+          showToolbar
+          slotProps={{ toolbar: { title: `${userName}'s Tasks` } }}
         />
       )}
     </Paper>

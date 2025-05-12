@@ -16,7 +16,11 @@ export const taskEntitySchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   description: z.string(),
   completed: z.boolean().optional(),
-  deadline: z.string().date().optional(),
+  deadline: z
+    .string()
+    .date()
+    .transform((str) => new Date(str))
+    .optional(),
   tags: z.string().array().optional(),
 });
 

@@ -1,4 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+TO DO:
+
+IMPORTANT
+
+- Update context of modal
+- Add update
+- Update delete api to handle batch delete
+- Form validation in modal
+- Error handling in frontend
+- Add database seed scripts
+- Dockerize the application using Docker and Docker Compose
+- CI/CD Pipeline
+- Deploy on AWS
+- Include a README.md with the following details:
+  ○
+  Setup instructions.
+  ○
+  API documentation.
+  ○
+  Any assumptions or decisions made
+
+BONUS
+
+- Improve responsiveness and design
+- Email Notifs
+- Some unit tests
+- Use Kubernetes somehow
 
 ## Getting Started
 
