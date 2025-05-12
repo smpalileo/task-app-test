@@ -2,9 +2,8 @@ TO DO:
 
 IMPORTANT
 
-- Update context of modal
 - Add update
-- Update delete api to handle batch delete
+- Add delete
 - Form validation in modal
 - Error handling in frontend
 - Add database seed scripts

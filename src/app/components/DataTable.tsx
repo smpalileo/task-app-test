@@ -1,6 +1,5 @@
 import { HydratedDocument } from "mongoose";
 import { ITask } from "../models/Task";
-import { Loader } from "./Loader";
 import { AppContext } from "../tasks/page";
 import { useContext } from "react";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
@@ -13,9 +12,6 @@ export const DataTableComponent = ({
   data: Array<HydratedDocument<ITask>>;
 }) => {
   const { userName, loading } = useContext(AppContext);
-
-  console.log("context: ", userName);
-  console.log("loading: ", loading);
 
   const columns: GridColDef[] = [
     { field: "name", headerName: "Name", width: 300 },
@@ -57,24 +53,27 @@ export const DataTableComponent = ({
 
   return (
     <Paper sx={{ height: 800, width: "100%" }}>
-      {loading ? (
-        <Loader />
-      ) : (
-        <DataGrid
-          rows={data.map((task) => {
-            return {
-              ...task,
-              id: task._id,
-            };
-          })}
-          columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[5, 10, 20]}
-          sx={{ border: 15, padding: 4 }}
-          showToolbar
-          slotProps={{ toolbar: { title: `${userName}'s Tasks` } }}
-        />
-      )}
+      <DataGrid
+        rows={data.map((task) => {
+          return {
+            ...task,
+            id: task._id,
+          };
+        })}
+        columns={columns}
+        initialState={{ pagination: { paginationModel } }}
+        pageSizeOptions={[5, 10, 20]}
+        sx={{ border: 15, padding: 4 }}
+        showToolbar
+        loading={loading}
+        slotProps={{
+          toolbar: { title: `${userName}'s Tasks` },
+          loadingOverlay: {
+            variant: "skeleton",
+            noRowsVariant: "skeleton",
+          },
+        }}
+      />
     </Paper>
   );
 };
