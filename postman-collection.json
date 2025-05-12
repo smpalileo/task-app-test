@@ -1,0 +1,89 @@
+{
+  "info": {
+    "_postman_id": "2bbf454f-61da-421f-9b3b-f8076a77ae0a",
+    "name": "task-app-test",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": ""
+  },
+  "item": [
+    {
+      "name": "GET tasks",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/api/tasks",
+          "path": ["api", "tasks"],
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000"
+        }
+      }
+    },
+    {
+      "name": "POST Create Task",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "http://localhost:3000/api/tasks",
+          "path": ["api", "tasks"],
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000"
+        },
+        "body": {
+          "mode": "raw",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          },
+          "raw": "{\n  \"name\": \"testing endpoint\",\n  \"description\": \"testing 1722 hours\",\n  \"deadline\": \"2025-05-15\",\n  \"tags\": [\"label4\"]\n}"
+        }
+      }
+    },
+    {
+      "name": "PATCH Update Task",
+      "request": {
+        "method": "PATCH",
+        "url": {
+          "raw": "http://localhost:3000/api/tasks/6820afdd388b5ccc400ec05b",
+          "path": ["api", "tasks", "6820afdd388b5ccc400ec05b"],
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000"
+        },
+        "body": {
+          "mode": "raw",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          },
+          "raw": "{\n  \"name\": \"UPDATED testing validation task 2\"\n}"
+        }
+      }
+    },
+    {
+      "name": "DELETE Remove Task",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "http://localhost:3000/api/tasks",
+          "path": ["api", "tasks"],
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000"
+        },
+        "body": {
+          "mode": "raw",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          },
+          "raw": "{\n  \"_id\": \"68206990eb30ac0b8a5bfa97\"\n}"
+        }
+      }
+    }
+  ]
+}
