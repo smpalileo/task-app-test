@@ -117,17 +117,15 @@ export function EditButton() {
   );
 }
 
-export function DeleteButton() {
-  const { setIsModalOpen } = useContext(AppContext);
-  const handleClick = () => {
-    setIsModalOpen({ state: true, isNew: false });
-  };
+export function DeleteButton({ handleDelete }: { handleDelete: () => void }) {
   return (
-    <IconButton
-      onClick={handleClick}
-      aria-label="delete"
+    <Button
+      color="error"
+      variant="outlined"
+      onClick={handleDelete}
+      endIcon={<DeleteIcon />}
     >
-      <DeleteIcon />
-    </IconButton>
+      {"Delete"}
+    </Button>
   );
 }

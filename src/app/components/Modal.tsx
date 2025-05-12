@@ -17,7 +17,7 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../tasks/page";
-import { ClearButton, SubmitButton } from "./Button";
+import { ClearButton, DeleteButton, SubmitButton } from "./Button";
 import DatePickerComponent from "./DatePicker";
 import CloseIcon from "@mui/icons-material/Close";
 import { MuiChipsInput } from "mui-chips-input";
@@ -154,6 +154,40 @@ export const DialogComponent = ({ title }: { title: string }) => {
     }
   };
 
+  const handleDelete = async () => {
+    await fetch("/api/tasks", {
+      method: "DELETE",
+      body: JSON.stringify({ _id: props._id }),
+    }).then(async (response) => {
+      const res = await response.json();
+      if (res.error) {
+        setAlertText({
+          text: "Error deleting task!",
+          success: false,
+        });
+        setTimeout(() => {
+          setAlertText(alertState);
+        }, 3000);
+      } else {
+        setAlertText({
+          text: "Successfully deleted task!",
+          success: true,
+        });
+        setTimeout(() => {
+          const reducedTasks: Array<HydratedDocument<ITask>> = tasks.filter(
+            (task: HydratedDocument<ITask>) =>
+              task._id.toString() !== props._id,
+          );
+          setTasks(reducedTasks as unknown as never);
+          setAlertText(alertState);
+          setSubmitState(false);
+          handleClose();
+          handleClear();
+        }, 3000);
+      }
+    });
+  };
+
   useEffect(() => {
     if (props.name === "") setNameError(true);
     else setNameError(false);
@@ -276,6 +310,7 @@ export const DialogComponent = ({ title }: { title: string }) => {
           isSubmitting={isSubmitting}
           handleClick={handleSubmit}
         />
+        {!isModalOpen.isNew && <DeleteButton handleDelete={handleDelete} />}
       </DialogActions>
     </Dialog>
   );

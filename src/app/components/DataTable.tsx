@@ -7,7 +7,7 @@ import Paper from "@mui/material/Paper";
 import { ChipComponent } from "./Chip";
 import { HydratedDocument } from "mongoose";
 import { ITask } from "../models/Task";
-import { DeleteButton, EditButton } from "./Button";
+import { EditButton } from "./Button";
 
 export const DataTableComponent = () => {
   const { userName, tasks, setTasks, setProps } = useContext(AppContext);
@@ -74,14 +74,6 @@ export const DataTableComponent = () => {
       flex: 0.1,
       renderCell: () => <EditButton />,
     },
-    {
-      field: "delete",
-      headerName: "Delete",
-      sortable: false,
-      align: "center",
-      flex: 0.1,
-      renderCell: () => <DeleteButton />,
-    },
   ];
 
   const paginationModel = { page: 0, pageSize: 10 };
@@ -115,9 +107,11 @@ export const DataTableComponent = () => {
           const selectedRowData = tasks.filter(
             (task: HydratedDocument<ITask>) => row.ids.has(task._id.toString()),
           );
-          const { _id, name, description, deadline, tags, completed } =
-            selectedRowData[0];
-          setProps({ _id, name, description, deadline, tags, completed });
+          if (selectedRowData && selectedRowData.length > 0) {
+            const { _id, name, description, deadline, tags, completed } =
+              selectedRowData[0];
+            setProps({ _id, name, description, deadline, tags, completed });
+          }
         }}
       />
     </Paper>
