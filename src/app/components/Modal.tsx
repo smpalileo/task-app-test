@@ -16,7 +16,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../tasks/page";
+import { AppContext } from "../context/AppContext";
 import { ClearButton, DeleteButton, SubmitButton } from "./Button";
 import DatePickerComponent from "./DatePicker";
 import CloseIcon from "@mui/icons-material/Close";

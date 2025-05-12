@@ -1,37 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { createContext, useState } from "react";
+import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { DataTableComponent } from "../components/DataTable";
 import { AddButton, BackButton } from "../components/Button";
 import { DialogComponent } from "../components/Modal";
 import { Box } from "@mui/material";
-
-const initialState = {
-  _id: "",
-  name: "",
-  description: "",
-  deadline: undefined,
-  tags: [],
-  completed: false,
-};
-
-export const AppContext = createContext({
-  userName: "",
-  isModalOpen: { state: false, isNew: true },
-  setIsModalOpen: (isModalOpen: { state: boolean; isNew: boolean }) => {},
-  tasks: [],
-  setTasks: (tasks: never[]) => {},
-  props: initialState,
-  setProps: (props: {
-    _id: string;
-    name: string;
-    description: string;
-    deadline: undefined;
-    tags: never[];
-    completed: boolean;
-  }) => {},
-});
+import { AppContext, initialState } from "../context/AppContext";
 
 export default function Page() {
   const { user } = useUser();

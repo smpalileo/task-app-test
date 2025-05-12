@@ -9,20 +9,22 @@ import EditIcon from "@mui/icons-material/Edit";
 import RotateLeftRoundedIcon from "@mui/icons-material/RotateLeftRounded";
 import { redirect } from "next/navigation";
 import { useContext } from "react";
-import { AppContext } from "../tasks/page";
+import { AppContext } from "../context/AppContext";
 
 export function MainButton({ text = "Get Started" }: { text?: string }) {
   const handleClick = () => {
     return redirect("/tasks");
   };
   return (
-    <Button
-      onClick={handleClick}
-      variant="contained"
-      endIcon={<ArrowForwardRoundedIcon />}
-    >
-      {text}
-    </Button>
+    <div>
+      <Button
+        onClick={handleClick}
+        variant="contained"
+        endIcon={<ArrowForwardRoundedIcon />}
+      >
+        {text}
+      </Button>
+    </div>
   );
 }
 
