@@ -7,12 +7,30 @@ import { AddButton, BackButton } from "../components/Button";
 import { DialogComponent } from "../components/Modal";
 import { Box } from "@mui/material";
 
+const initialState = {
+  _id: "",
+  name: "",
+  description: "",
+  deadline: undefined,
+  tags: [],
+  completed: false,
+};
+
 export const AppContext = createContext({
   userName: "",
-  isModalOpen: false,
-  setIsModalOpen: (isModalOpen: boolean) => {},
+  isModalOpen: { state: false, isNew: true },
+  setIsModalOpen: (isModalOpen: { state: boolean; isNew: boolean }) => {},
   tasks: [],
   setTasks: (tasks: never[]) => {},
+  props: initialState,
+  setProps: (props: {
+    _id: string;
+    name: string;
+    description: string;
+    deadline: undefined;
+    tags: never[];
+    completed: boolean;
+  }) => {},
 });
 
 export default function Page() {
@@ -20,8 +38,9 @@ export default function Page() {
   const userName =
     user?.firstName || user?.emailAddresses[0].emailAddress.split("@")[0] || "";
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState({ state: false, isNew: true });
   const [tasks, setTasks] = useState([]);
+  const [props, setProps] = useState(initialState);
 
   return (
     <AppContext.Provider
@@ -31,6 +50,8 @@ export default function Page() {
         setIsModalOpen,
         tasks,
         setTasks,
+        props,
+        setProps,
       }}
     >
       <Box
@@ -45,7 +66,11 @@ export default function Page() {
         </div>
         <DataTableComponent />
       </Box>
-      {isModalOpen && <DialogComponent title={"Create New Task"} />}
+      {isModalOpen.state && (
+        <DialogComponent
+          title={isModalOpen.isNew ? "Create New Task" : "Update Task"}
+        />
+      )}
     </AppContext.Provider>
   );
 }

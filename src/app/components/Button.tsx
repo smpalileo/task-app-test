@@ -1,9 +1,11 @@
 "use client";
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import RotateLeftRoundedIcon from "@mui/icons-material/RotateLeftRounded";
 import { redirect } from "next/navigation";
 import { useContext } from "react";
@@ -42,7 +44,7 @@ export function BackButton({ text = "Back" }: { text?: string }) {
 export function AddButton({ text = "Create" }: { text?: string }) {
   const { setIsModalOpen } = useContext(AppContext);
   const handleClick = () => {
-    setIsModalOpen(true);
+    setIsModalOpen({ state: true, isNew: true });
   };
   return (
     <Button
@@ -97,5 +99,35 @@ export function ClearButton({
     >
       {text}
     </Button>
+  );
+}
+
+export function EditButton() {
+  const { setIsModalOpen } = useContext(AppContext);
+  const handleClick = () => {
+    setIsModalOpen({ state: true, isNew: false });
+  };
+  return (
+    <IconButton
+      onClick={handleClick}
+      aria-label="edit"
+    >
+      <EditIcon />
+    </IconButton>
+  );
+}
+
+export function DeleteButton() {
+  const { setIsModalOpen } = useContext(AppContext);
+  const handleClick = () => {
+    setIsModalOpen({ state: true, isNew: false });
+  };
+  return (
+    <IconButton
+      onClick={handleClick}
+      aria-label="delete"
+    >
+      <DeleteIcon />
+    </IconButton>
   );
 }

@@ -24,6 +24,8 @@ export const taskEntitySchema = z.object({
   tags: z.string().array().optional(),
 });
 
+export const updateEntitySchema = taskEntitySchema.partial();
+
 export type TaskCreateDTO = z.infer<typeof taskEntitySchema>;
 export type TaskUpdateDTO = Partial<TaskCreateDTO>;
 

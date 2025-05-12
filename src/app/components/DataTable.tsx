@@ -7,9 +7,10 @@ import Paper from "@mui/material/Paper";
 import { ChipComponent } from "./Chip";
 import { HydratedDocument } from "mongoose";
 import { ITask } from "../models/Task";
+import { DeleteButton, EditButton } from "./Button";
 
 export const DataTableComponent = () => {
-  const { userName, tasks, setTasks } = useContext(AppContext);
+  const { userName, tasks, setTasks, setProps } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
 
   const fetchTasks = async () => {
@@ -28,7 +29,11 @@ export const DataTableComponent = () => {
   }, []);
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Name", width: 300 },
+    {
+      field: "name",
+      headerName: "Name",
+      width: 300,
+    },
     { field: "description", headerName: "Description", flex: 1, minWidth: 800 },
     {
       field: "deadline",
@@ -61,6 +66,22 @@ export const DataTableComponent = () => {
       align: "right",
       flex: 0.1,
     },
+    {
+      field: "edit",
+      headerName: "Edit",
+      sortable: false,
+      align: "center",
+      flex: 0.1,
+      renderCell: () => <EditButton />,
+    },
+    {
+      field: "delete",
+      headerName: "Delete",
+      sortable: false,
+      align: "center",
+      flex: 0.1,
+      renderCell: () => <DeleteButton />,
+    },
   ];
 
   const paginationModel = { page: 0, pageSize: 10 };
@@ -76,6 +97,7 @@ export const DataTableComponent = () => {
             };
           },
         )}
+        rowSelection
         columns={columns}
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10, 20]}
@@ -88,6 +110,14 @@ export const DataTableComponent = () => {
             variant: "skeleton",
             noRowsVariant: "skeleton",
           },
+        }}
+        onRowSelectionModelChange={(row) => {
+          const selectedRowData = tasks.filter(
+            (task: HydratedDocument<ITask>) => row.ids.has(task._id.toString()),
+          );
+          const { _id, name, description, deadline, tags, completed } =
+            selectedRowData[0];
+          setProps({ _id, name, description, deadline, tags, completed });
         }}
       />
     </Paper>

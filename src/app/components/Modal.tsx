@@ -6,8 +6,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
+  FormGroup,
   Grid,
   IconButton,
+  Switch,
   TextField,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -18,32 +21,36 @@ import { ClearButton, SubmitButton } from "./Button";
 import DatePickerComponent from "./DatePicker";
 import CloseIcon from "@mui/icons-material/Close";
 import { MuiChipsInput } from "mui-chips-input";
+import dayjs from "dayjs";
+import { HydratedDocument } from "mongoose";
+import { ITask } from "../models/Task";
+
+const initialState = {
+  _id: "",
+  name: "",
+  description: "",
+  deadline: undefined,
+  tags: [],
+  completed: false,
+};
 
 export const DialogComponent = ({ title }: { title: string }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const { isModalOpen, setIsModalOpen, tasks, setTasks } =
+  const { isModalOpen, setIsModalOpen, tasks, setTasks, props, setProps } =
     useContext(AppContext);
-
-  const initialState = {
-    name: "",
-    description: "",
-    deadline: undefined,
-    tags: [],
-    completed: false,
-  };
 
   const alertState = {
     text: "",
     success: true,
   };
 
-  const [props, setProps] = useState(initialState);
   const [isSubmitting, setSubmitState] = useState(false);
   const [alertText, setAlertText] = useState(alertState);
 
   const handleClose = () => {
-    setIsModalOpen(false);
+    setProps(initialState);
+    setIsModalOpen({ state: false, isNew: true });
   };
 
   const handleClear = () => {
@@ -55,47 +62,90 @@ export const DialogComponent = ({ title }: { title: string }) => {
     value,
   }: {
     prop: string;
-    value: string | string[];
+    value: string | string[] | boolean;
   }) => {
     setProps({ ...props, [prop]: value });
   };
 
   const handleSubmit = async () => {
     setSubmitState(true);
-    await fetch("/api/tasks", {
-      method: "POST",
-      body: JSON.stringify(props),
-    }).then(async (response) => {
-      const res = await response.json();
-      if (res.error) {
-        setAlertText({
-          text: "Error creating new task!",
-          success: false,
-        });
-        setTimeout(() => {
-          setAlertText(alertState);
-        }, 3000);
-      } else {
-        setAlertText({
-          text: "Successfully created new task!",
-          success: true,
-        });
-        setTimeout(() => {
-          setTasks([res as never, ...tasks]);
-          console.log("SHOULD UPDATE", tasks);
-          setAlertText(alertState);
-          setSubmitState(false);
-          handleClose();
-          handleClear();
-        }, 3000);
-      }
-    });
+    if (isModalOpen.isNew) {
+      await fetch("/api/tasks", {
+        method: "POST",
+        body: JSON.stringify(props),
+      }).then(async (response) => {
+        const res = await response.json();
+        if (res.error) {
+          setAlertText({
+            text: "Error creating new task!",
+            success: false,
+          });
+          setTimeout(() => {
+            setAlertText(alertState);
+            setSubmitState(false);
+          }, 3000);
+        } else {
+          setAlertText({
+            text: "Successfully created new task!",
+            success: true,
+          });
+          setTimeout(() => {
+            setTasks([res as never, ...tasks]);
+            setAlertText(alertState);
+            setSubmitState(false);
+            handleClose();
+            handleClear();
+          }, 3000);
+        }
+      });
+    } else {
+      const updateBody = {
+        ...props,
+        deadline: props.deadline
+          ? dayjs(props.deadline).format("YYYY-MM-DD")
+          : undefined,
+      };
+      await fetch(`/api/tasks/${props._id}`, {
+        method: "PATCH",
+        body: JSON.stringify(updateBody),
+      }).then(async (response) => {
+        const res = await response.json();
+        if (res.error) {
+          setAlertText({
+            text: "Error updating task!",
+            success: false,
+          });
+          setTimeout(() => {
+            setAlertText(alertState);
+            setSubmitState(false);
+          }, 3000);
+        } else {
+          setAlertText({
+            text: "Successfully updated task!",
+            success: true,
+          });
+          setTimeout(() => {
+            const updatedTasks: Array<HydratedDocument<ITask>> = tasks.map(
+              (task: HydratedDocument<ITask>) => {
+                if (res._id === task._id) return res;
+                return task;
+              },
+            );
+            setTasks(updatedTasks as unknown as never);
+            setAlertText(alertState);
+            setSubmitState(false);
+            handleClose();
+            handleClear();
+          }, 3000);
+        }
+      });
+    }
   };
 
   return (
     <Dialog
       fullScreen={fullScreen}
-      open={isModalOpen}
+      open={isModalOpen.state}
       onClose={handleClose}
       aria-labelledby="responsive-dialog-title"
     >
@@ -142,6 +192,7 @@ export const DialogComponent = ({ title }: { title: string }) => {
               label="Name"
               fullWidth
               variant="standard"
+              value={props.name === "" ? undefined : props.name}
               onChange={(e) =>
                 handleChange({ prop: "name", value: e.target.value })
               }
@@ -155,6 +206,7 @@ export const DialogComponent = ({ title }: { title: string }) => {
               label="Description"
               fullWidth
               variant="standard"
+              value={props.description === "" ? undefined : props.description}
               onChange={(e) =>
                 handleChange({ prop: "description", value: e.target.value })
               }
@@ -168,14 +220,35 @@ export const DialogComponent = ({ title }: { title: string }) => {
               handleAccept={handleChange}
               value={props.deadline ?? null}
             />
+            {!isModalOpen.isNew && isModalOpen.state && (
+              <FormGroup>
+                <FormControlLabel
+                  required
+                  control={
+                    <Switch
+                      checked={props.completed}
+                      onChange={(e, checked) =>
+                        handleChange({
+                          prop: "completed",
+                          value: checked,
+                        })
+                      }
+                    />
+                  }
+                  label="Completed"
+                />
+              </FormGroup>
+            )}
           </Grid>
         </Box>
       </DialogContent>
       <DialogActions>
-        <ClearButton
-          isSubmitting={isSubmitting}
-          handleClick={handleClear}
-        />
+        {isModalOpen.isNew && (
+          <ClearButton
+            isSubmitting={isSubmitting}
+            handleClick={handleClear}
+          />
+        )}
         <SubmitButton
           isSubmitting={isSubmitting}
           handleClick={handleSubmit}
