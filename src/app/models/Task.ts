@@ -42,6 +42,7 @@ const TaskSchema: Schema = new mongoose.Schema(
     userId: {
       type: String,
       required: true,
+      index: true,
     },
     completed: {
       type: Boolean,
@@ -58,6 +59,8 @@ const TaskSchema: Schema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+TaskSchema.index({ _id: 1, userId: 1 });
 
 const Task = mongoose.models.Task || mongoose.model<ITask>("Task", TaskSchema);
 
