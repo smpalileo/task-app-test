@@ -2,10 +2,7 @@ TO DO:
 
 IMPORTANT
 
-- Add update
 - Add delete
-- Form validation in modal
-- Error handling in frontend
 - Add database seed scripts
 - Dockerize the application using Docker and Docker Compose
 - CI/CD Pipeline

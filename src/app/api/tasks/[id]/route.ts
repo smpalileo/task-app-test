@@ -12,7 +12,6 @@ export async function PATCH(
     const { userId } = await auth();
     const _id = (await params).id;
     const body: TaskUpdateDTO = await request.json();
-    console.log("body", body);
     const input = updateEntitySchema.parse(body);
     const task = await Task.findOneAndUpdate({ _id, userId }, input, {
       new: true,

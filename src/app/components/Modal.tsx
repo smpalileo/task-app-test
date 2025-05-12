@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../tasks/page";
 import { ClearButton, SubmitButton } from "./Button";
 import DatePickerComponent from "./DatePicker";
@@ -47,6 +47,8 @@ export const DialogComponent = ({ title }: { title: string }) => {
 
   const [isSubmitting, setSubmitState] = useState(false);
   const [alertText, setAlertText] = useState(alertState);
+  const [nameError, setNameError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
 
   const handleClose = () => {
     setProps(initialState);
@@ -68,79 +70,96 @@ export const DialogComponent = ({ title }: { title: string }) => {
   };
 
   const handleSubmit = async () => {
-    setSubmitState(true);
-    if (isModalOpen.isNew) {
-      await fetch("/api/tasks", {
-        method: "POST",
-        body: JSON.stringify(props),
-      }).then(async (response) => {
-        const res = await response.json();
-        if (res.error) {
-          setAlertText({
-            text: "Error creating new task!",
-            success: false,
-          });
-          setTimeout(() => {
-            setAlertText(alertState);
-            setSubmitState(false);
-          }, 3000);
-        } else {
-          setAlertText({
-            text: "Successfully created new task!",
-            success: true,
-          });
-          setTimeout(() => {
-            setTasks([res as never, ...tasks]);
-            setAlertText(alertState);
-            setSubmitState(false);
-            handleClose();
-            handleClear();
-          }, 3000);
-        }
+    if (nameError || descriptionError) {
+      setAlertText({
+        text: "Validation error!",
+        success: false,
       });
+      setTimeout(() => {
+        setAlertText(alertState);
+      }, 3000);
     } else {
-      const updateBody = {
-        ...props,
-        deadline: props.deadline
-          ? dayjs(props.deadline).format("YYYY-MM-DD")
-          : undefined,
-      };
-      await fetch(`/api/tasks/${props._id}`, {
-        method: "PATCH",
-        body: JSON.stringify(updateBody),
-      }).then(async (response) => {
-        const res = await response.json();
-        if (res.error) {
-          setAlertText({
-            text: "Error updating task!",
-            success: false,
-          });
-          setTimeout(() => {
-            setAlertText(alertState);
-            setSubmitState(false);
-          }, 3000);
-        } else {
-          setAlertText({
-            text: "Successfully updated task!",
-            success: true,
-          });
-          setTimeout(() => {
-            const updatedTasks: Array<HydratedDocument<ITask>> = tasks.map(
-              (task: HydratedDocument<ITask>) => {
-                if (res._id === task._id) return res;
-                return task;
-              },
-            );
-            setTasks(updatedTasks as unknown as never);
-            setAlertText(alertState);
-            setSubmitState(false);
-            handleClose();
-            handleClear();
-          }, 3000);
-        }
-      });
+      setSubmitState(true);
+      if (isModalOpen.isNew) {
+        await fetch("/api/tasks", {
+          method: "POST",
+          body: JSON.stringify(props),
+        }).then(async (response) => {
+          const res = await response.json();
+          if (res.error) {
+            setAlertText({
+              text: "Error creating new task!",
+              success: false,
+            });
+            setTimeout(() => {
+              setAlertText(alertState);
+              setSubmitState(false);
+            }, 3000);
+          } else {
+            setAlertText({
+              text: "Successfully created new task!",
+              success: true,
+            });
+            setTimeout(() => {
+              setTasks([res as never, ...tasks]);
+              setAlertText(alertState);
+              setSubmitState(false);
+              handleClose();
+              handleClear();
+            }, 3000);
+          }
+        });
+      } else {
+        const updateBody = {
+          ...props,
+          deadline: props.deadline
+            ? dayjs(props.deadline).format("YYYY-MM-DD")
+            : undefined,
+        };
+        await fetch(`/api/tasks/${props._id}`, {
+          method: "PATCH",
+          body: JSON.stringify(updateBody),
+        }).then(async (response) => {
+          const res = await response.json();
+          if (res.error) {
+            setAlertText({
+              text: "Error updating task!",
+              success: false,
+            });
+            setTimeout(() => {
+              setAlertText(alertState);
+              setSubmitState(false);
+            }, 3000);
+          } else {
+            setAlertText({
+              text: "Successfully updated task!",
+              success: true,
+            });
+            setTimeout(() => {
+              const updatedTasks: Array<HydratedDocument<ITask>> = tasks.map(
+                (task: HydratedDocument<ITask>) => {
+                  if (res._id === task._id) return res;
+                  return task;
+                },
+              );
+              setTasks(updatedTasks as unknown as never);
+              setAlertText(alertState);
+              setSubmitState(false);
+              handleClose();
+              handleClear();
+            }, 3000);
+          }
+        });
+      }
     }
   };
+
+  useEffect(() => {
+    if (props.name === "") setNameError(true);
+    else setNameError(false);
+    if (props.description === "") setDescriptionError(true);
+    else setDescriptionError(false);
+  }, [props.name, props.description]);
 
   return (
     <Dialog
@@ -192,10 +211,12 @@ export const DialogComponent = ({ title }: { title: string }) => {
               label="Name"
               fullWidth
               variant="standard"
-              value={props.name === "" ? undefined : props.name}
+              value={props.name ?? ""}
               onChange={(e) =>
                 handleChange({ prop: "name", value: e.target.value })
               }
+              error={nameError}
+              helperText={"Name is required"}
             />
             <TextField
               autoFocus
@@ -206,10 +227,12 @@ export const DialogComponent = ({ title }: { title: string }) => {
               label="Description"
               fullWidth
               variant="standard"
-              value={props.description === "" ? undefined : props.description}
+              value={props.description ?? ""}
               onChange={(e) =>
                 handleChange({ prop: "description", value: e.target.value })
               }
+              error={descriptionError}
+              helperText={"Description is required"}
             />
             <MuiChipsInput
               label={"Tags"}
